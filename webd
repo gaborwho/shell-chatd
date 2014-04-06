@@ -1,0 +1,66 @@
+#!/bin/sh
+cd /websh
+. ./html.sh
+
+password=Je9leePh
+
+read request
+while true; do
+	read header
+	[ -z "$(echo "$header" | tr -d "[:space:]")" ] && break
+	echo $header | grep -q "^Content-Length" && length=$(echo $header | grep -o "[0-9]*")
+done
+
+if [ -n "$length" ]; then
+	post=$(dd bs=$length count=1 2>/dev/null)
+fi
+
+# HTTP request parsing
+method=$(echo "$request" | cut -d\  -f1)
+[ "$method" != "GET" -a "$method" != "POST" ] && exit
+resource=$(echo "$request" | cut -d\  -f2)
+
+# resource parsing
+path="$(echo "$resource" | cut -d\? -f1)"
+if $(echo "$resource" | grep -q ?); then
+	query="$(echo "$resource" | cut -d\? -f2)"
+	query="$(echo $query | tr "&\"" "\n")"
+	while IFS= read getvar; do
+		field="$(echo "$getvar" | cut -d\= -f1)"
+		echo "$field" | grep -q '^[a-zA-Z_][a-zA-Z0-9_]*$' && eval get_$field=\'"$(echo "$getvar" | cut -d\= -f2)"\'
+	done <<EOT
+$query
+EOT
+fi
+
+out="HTTP/1.1 200 OK\r\n"
+out="${out}Server: nginx/1.0.4\r\n"
+out="${out}Content-Type: text/html; charset=UTF-8\r\n"
+out="${out}\r\n"
+
+if [ "$get_pwd" != "$password" ]; then
+	out="${out}You are not authorized!\r"
+	echo -n "$out\r\n"
+	exit
+fi
+
+# POST redirect
+if [ "$method" = "POST" ]; then
+	echo "$post" | sed 's % \\\\x g' | xargs printf | tr "+" " " >> carrychat.log
+	echo >> carrychat.log
+	echo "HTTP/1.1 303 See Other\r"
+	echo "Location: $resource\r"
+	echo "\r"
+	echo done >> done
+	exit
+fi
+
+echo "${out}<html>"
+echo "<form method=\"POST\" action=\"?pwd=$password\">\r"
+name="msg"; input
+submit
+echo "</form><pre>"
+tac carrychat.log
+echo "</pre></html>"
+echo "\r"
+
