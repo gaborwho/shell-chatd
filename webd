@@ -61,7 +61,6 @@ if [ "$method" = "POST" ]; then
 	echo "HTTP/1.1 303 See Other\r"
 	echo "Location: $resource\r"
 	echo "\r"
-	echo done >> done
 	exit
 fi
 
