@@ -42,7 +42,7 @@ fi
 request_parse 'post' "$post"
 
 out="HTTP/1.1 200 OK\r\n"
-out="${out}Cache-Control: no-cache\r\n"
+out="${out}Cache-Control: no-store\r\n"
 out="${out}Content-Type: text/html; charset=UTF-8\r\n"
 out="${out}\r\n"
 
