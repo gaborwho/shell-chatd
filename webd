@@ -42,7 +42,7 @@ fi
 request_parse 'post' "$post"
 
 out="HTTP/1.1 200 OK\r\n"
-out="${out}Server: nginx/1.0.4\r\n"
+out="${out}Cache-Control: no-cache\r\n"
 out="${out}Content-Type: text/html; charset=UTF-8\r\n"
 out="${out}\r\n"
 
@@ -66,8 +66,8 @@ fi
 
 msgs="$(tac data/carrychat.log | sed -n '1,20p' | sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac)"
 
+echo "$out"
 eval "cat <<EOT
-$out
 $(cat chat.html)
 EOT"
 
