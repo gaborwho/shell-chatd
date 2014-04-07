@@ -67,7 +67,7 @@ fi
 
 echo "${out}<html>"
 echo "<pre>"
-tac carrychat.log | sed -n '1,20p' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac
+tac data/carrychat.log | sed -n '1,20p' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac
 echo "</pre>"
 echo "<form method=\"POST\" action=\"?pwd=$password\">\r"
 name="msg"; input
@@ -75,7 +75,6 @@ name="valami"; value="proba"; hidden
 submit
 echo "</form>"
 #echo "<script>setTimeout(function(){location.reload();},3000);</script>"
-echo "<script>window.onfocus=function(){location.reload();};</script>"
 echo "</html>"
 echo "\r"
 
