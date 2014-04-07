@@ -4,9 +4,10 @@ cd /websh
 
 password=Je9leePh
 
-read request
+# read HTTP message
+read -r request
 while true; do
-	read header
+	read -r header
 	[ -z "$(echo "$header" | tr -d "[:space:]")" ] && break
 	echo $header | grep -q "^Content-Length" && length=$(echo $header | grep -o "[0-9]*")
 done
@@ -20,18 +21,25 @@ method=$(echo "$request" | cut -d\  -f1)
 [ "$method" != "GET" -a "$method" != "POST" ] && exit
 resource=$(echo "$request" | cut -d\  -f2)
 
+request_parse() {
+	query=$(echo "$2" | tr -cd '[:alnum:]-_.~!*'\''();:@&=+$,/?#[]%' | tr '&' "\n")
+	while read -r getvar; do
+		field="$(echo "$getvar" | cut -d\= -f1)"
+		echo "$field" | grep -q '^[a-zA-Z_][a-zA-Z0-9_]*$' && eval $1_$field=\'"$(echo "$getvar" | cut -d\= -f2)"\'
+	done <<EOT
+$query
+EOT
+}
+
 # resource parsing
 path="$(echo "$resource" | cut -d\? -f1)"
 if $(echo "$resource" | grep -q ?); then
 	query="$(echo "$resource" | cut -d\? -f2)"
-	query="$(echo $query | tr "&\"" "\n")"
-	while IFS= read getvar; do
-		field="$(echo "$getvar" | cut -d\= -f1)"
-		echo "$field" | grep -q '^[a-zA-Z_][a-zA-Z0-9_]*$' && eval get_$field=\'"$(echo "$getvar" | cut -d\= -f2)"\'
-	done <<EOT
-$query
-EOT
+	request_parse 'get' "$query"
 fi
+
+# post parsing
+request_parse 'post' "$post"
 
 out="HTTP/1.1 200 OK\r\n"
 out="${out}Server: nginx/1.0.4\r\n"
@@ -46,8 +54,10 @@ fi
 
 # POST redirect
 if [ "$method" = "POST" ]; then
-	echo "$post" | sed 's % \\\\x g' | xargs printf | tr "+" " " >> carrychat.log
-	echo >> carrychat.log
+	if [ -n "$post_msg" ]; then
+		echo "[$(date '+%H:%M')]+$post_msg" | sed 's/+/%20/g' | sed 's % \\\\x g' | xargs printf >> carrychat.log
+		echo >> carrychat.log
+	fi
 	echo "HTTP/1.1 303 See Other\r"
 	echo "Location: $resource\r"
 	echo "\r"
@@ -56,11 +66,16 @@ if [ "$method" = "POST" ]; then
 fi
 
 echo "${out}<html>"
+echo "<pre>"
+tac carrychat.log | sed -n '1,20p' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac
+echo "</pre>"
 echo "<form method=\"POST\" action=\"?pwd=$password\">\r"
 name="msg"; input
+name="valami"; value="proba"; hidden
 submit
-echo "</form><pre>"
-tac carrychat.log
-echo "</pre></html>"
+echo "</form>"
+#echo "<script>setTimeout(function(){location.reload();},3000);</script>"
+echo "<script>window.onfocus=function(){location.reload();};</script>"
+echo "</html>"
 echo "\r"
 
