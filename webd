@@ -66,8 +66,7 @@ fi
 
 msgs="$(tac data/carrychat.log | sed -n '1,20p' | sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac)"
 
-echo "$out"
-eval "cat <<EOT
+echo "$out$(eval "cat <<EOT
 $(cat chat.html)
-EOT"
+EOT")"
 
