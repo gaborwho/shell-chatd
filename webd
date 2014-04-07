@@ -66,7 +66,7 @@ fi
 
 echo "${out}<html>"
 echo "<pre>"
-tac data/carrychat.log | sed -n '1,20p' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac
+tac data/carrychat.log | sed -n '1,20p' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | sed "s/</&lt;/g" | sed "s/>/&gt;/g" | tac
 echo "</pre>"
 echo "<form method=\"POST\" action=\"?pwd=$password&user=$get_user\">\r"
 name="msg"; input
