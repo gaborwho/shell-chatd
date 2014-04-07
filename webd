@@ -55,7 +55,7 @@ fi
 # POST redirect
 if [ "$method" = "POST" ]; then
 	if [ -n "$post_msg" ]; then
-		echo "[$(date '+%H:%M')]+$post_msg" | sed 's/+/%20/g' | sed 's % \\\\x g' | xargs printf >> data/carrychat.log
+		echo "[$(date '+%H:%M')]+$get_user:+$post_msg" | sed 's/+/%20/g' | sed 's % \\\\x g' | xargs printf >> data/carrychat.log
 		echo >> data/carrychat.log
 	fi
 	echo "HTTP/1.1 303 See Other\r"
@@ -68,7 +68,7 @@ echo "${out}<html>"
 echo "<pre>"
 tac data/carrychat.log | sed -n '1,20p' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac
 echo "</pre>"
-echo "<form method=\"POST\" action=\"?pwd=$password\">\r"
+echo "<form method=\"POST\" action=\"?pwd=$password&user=$get_user\">\r"
 name="msg"; input
 name="valami"; value="proba"; hidden
 submit
