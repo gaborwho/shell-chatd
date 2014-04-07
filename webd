@@ -64,16 +64,9 @@ if [ "$method" = "POST" ]; then
 	exit
 fi
 
-echo "${out}<html>"
-echo "<pre>"
-tac data/carrychat.log | sed -n '1,20p' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | sed 's/</&lt;/g' | sed 's/>/&gt;/g' | tac
-echo "</pre>"
-echo "<form method=\"POST\" action=\"?pwd=$password&user=$get_user\">\r"
-name="msg"; input
-name="valami"; value="proba"; hidden
-submit
-echo "</form>"
-#echo "<script>setTimeout(function(){location.reload();},3000);</script>"
-echo "</html>"
-echo "\r"
+msgs="$(tac data/carrychat.log | sed -n '1,20p' | sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac)"
+
+eval "cat <<EOT
+$(cat chat.html)
+EOT"
 
