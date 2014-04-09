@@ -66,12 +66,18 @@ var scroller = document.getElementById('scroller');
 var msg = document.getElementById('msg');
 var form = document.getElementById('form');
 function scroll() {document.body.scrollTop = document.body.scrollHeight};
-setTimeout(function(){scroll();},100);
+setTimeout(function(){scroll();},10);
 msg.onkeypress = function(e){
 	if(e.charCode == 13 && !e.shiftKey){
 		form.submit();
 	}	
 };
+var focusMouse;
+document.body.onmousemove=function(){focusMouse = false};
+document.body.onmousedown=function(){focusMouse = true};
+document.body.onmouseup=function(){if (focusMouse) {document.getElementById('msg').focus();}};
 </script>
 </body>
 </html>
+
+
