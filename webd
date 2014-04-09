@@ -55,7 +55,7 @@ fi
 # POST redirect
 if [ "$method" = "POST" ]; then
 	if [ -n "$post_msg" ]; then
-		echo "[$(date '+%H:%M')]+$get_user:+$post_msg" | sed 's/+/%20/g' | sed 's % \\\\x g' | xargs printf >> data/carrychat.log
+		echo "[$(date '+%H:%M')]+$get_user::+$post_msg" | sed 's/+/%20/g' | sed 's % \\\\x g' | xargs printf >> data/carrychat.log
 		echo >> data/carrychat.log
 	fi
 	echo "HTTP/1.1 303 See Other\r"
@@ -65,7 +65,8 @@ if [ "$method" = "POST" ]; then
 fi
 
 msgs="$(tac data/carrychat.log \
-| sed -n '1,20p' | sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g' \
+| sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g' \
+| sed 's/::/:<br \/>/g;' \
 | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | sed 's/^/<p>/g; s/$/<\/p>/g' | tac)"
 
 echo "$out$(eval "cat <<EOT

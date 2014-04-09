@@ -1,17 +1,63 @@
 <html>
 <head>
 <style>
+body {
+	margin: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
 p {
 	font-family: monospace;
 	margin: 0;
-	text-indent: -9em;
-	padding-left: 9em;
+	text-indent: -2em;
+	padding-left: 2em;
+}
+form {
+	position: relative;
+	padding-right: 100px;
+	margin: 0;
+}
+#msg {
+	margin: 1px;
+	height: 50px;
+	width: 100%;
+}
+#submit {
+	height: 50px;
+	margin: 1px;
+	width: 95px;
+	right: 0;
+	bottom: 0;
+	position: absolute;
+}
+#scroller {
+	font-family: sans-serif;
+	width: 50px;
+	height: 50px;
+	right: 5px;
+	top: 50px;
+	position: fixed;
+	line-height: 50px;
+	text-align: center;
+	text-decoration: none;
+	background-color: white;
+	color: black;
+	border: 1px solid black;
 }
 </style>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
+<body>
+<a id="scroller" href="#msg">down</a>
 $msgs
 <form method="POST" action="?pwd=$password&user=$get_user">
-<input name="msg" type="text" autofocus />
-<input type="submit" />
+<textarea name="msg" type="text" id="msg" autofocus></textarea>
+<input type="submit" id="submit" />
 </form>
+<script>
+var scroller = document.getElementById('scroller');
+function scroll() {document.body.scrollTop = document.body.scrollHeight};
+scroll();
+</script>
+</body>
 </html>
