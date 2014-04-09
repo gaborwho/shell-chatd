@@ -2,7 +2,7 @@
 cd /websh
 . ./html.sh
 
-password=Je9leePh
+password=Je9leePha
 
 # read HTTP message
 read -r request
@@ -64,7 +64,9 @@ if [ "$method" = "POST" ]; then
 	exit
 fi
 
-msgs="$(tac data/carrychat.log | sed -n '1,20p' | sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g' | sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | tac)"
+msgs="$(tac data/carrychat.log \
+| sed -n '1,20p' | sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g' \
+| sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | sed 's/^/<p>/g; s/$/<\/p>/g' | tac)"
 
 echo "$out$(eval "cat <<EOT
 $(cat chat.html)
