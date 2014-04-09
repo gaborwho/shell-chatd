@@ -12,52 +12,66 @@ p {
 	text-indent: -2em;
 	padding-left: 2em;
 }
-form {
+#form {
 	position: relative;
-	padding-right: 100px;
+	padding-right: 53px;
 	margin: 0;
 }
 #msg {
 	margin: 1px;
 	height: 50px;
 	width: 100%;
+	resize: none;
+	border: 1px solid black;
 }
-#submit {
+#send {
 	height: 50px;
 	margin: 1px;
-	width: 95px;
-	right: 0;
+	width: 50px;
+	right: 0px;
 	bottom: 0;
 	position: absolute;
+	background-color: white;
+	color: black;
+	font-size: 1em;
+	border: 1px solid black;
 }
 #scroller {
 	font-family: sans-serif;
 	width: 50px;
-	height: 50px;
-	right: 5px;
-	top: 50px;
+	height: 48px;
+	right: 1px;
+	bottom: 1px;
 	position: fixed;
 	line-height: 50px;
 	text-align: center;
 	text-decoration: none;
 	background-color: white;
 	color: black;
+	font-size: 1em;
 	border: 1px solid black;
 }
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-<a id="scroller" href="#msg">down</a>
+<a id="scroller" href="#msg">Down</a>
 $msgs
-<form method="POST" action="?pwd=$password&user=$get_user">
+<form method="POST" action="?pwd=$password&user=$get_user" id="form">
 <textarea name="msg" type="text" id="msg" autofocus></textarea>
-<input type="submit" id="submit" />
+<input type="submit" id="send" value="Send" />
 </form>
 <script>
 var scroller = document.getElementById('scroller');
+var msg = document.getElementById('msg');
+var form = document.getElementById('form');
 function scroll() {document.body.scrollTop = document.body.scrollHeight};
-scroll();
+setTimeout(function(){scroll();},100);
+msg.onkeypress = function(e){
+	if(e.charCode == 13 && !e.shiftKey){
+		form.submit();
+	}	
+};
 </script>
 </body>
 </html>
