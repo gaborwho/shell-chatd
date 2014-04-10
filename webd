@@ -1,8 +1,6 @@
 #!/bin/sh
 datadir="$1"
 
-room=46462e7a0a81178cd98fa919f8f989f6
-
 # read HTTP message
 read -r request
 while true; do
