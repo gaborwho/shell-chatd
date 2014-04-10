@@ -1,8 +1,7 @@
 #!/bin/sh
-cd /websh
-. ./html.sh
+datadir="$1"
 
-password=Je9leePha
+room=46462e7a0a81178cd98fa919f8f989f6
 
 # read HTTP message
 read -r request
@@ -46,7 +45,7 @@ out="${out}Cache-Control: no-store\r\n"
 out="${out}Content-Type: text/html; charset=UTF-8\r\n"
 out="${out}\r\n"
 
-if [ "$get_pwd" != "$password" ]; then
+if ! ls "$datadir" | grep -q "^$get_room.log\$"; then
 	out="${out}You are not authorized!\r"
 	echo -n "$out\r\n"
 	exit
@@ -55,9 +54,13 @@ fi
 # POST redirect
 if [ "$method" = "POST" ]; then
 	if [ -n "$post_msg" ]; then
-		echo "[$(date '+%H:%M')]+$get_user::+$post_msg" | sed 's/+/%20/g' | sed 's % \\\\x g' | xargs printf \
-			| sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g; s/$/<br \/>/g' >> data/carrychat.log
-		echo >> data/carrychat.log
+		post_msg="$(echo "$post_msg" | sed 's/+/%20/g' | sed 's % \\\\x g' | xargs printf \
+			| tr -d "\r" \
+			| sed -r '/[^ ]+/,$!d' | tac | sed -r '/[^ ]+/,$!d' | tac \
+			| sed 's/</\&lt;/g; s/>/\&gt;/g; s/&/\&amp;/g; s/"/\&quot;/g; s/$/<br \/>/g' \
+			| tr -d "\n" | sed 's|http[s]\?[:]//[^< ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g')"
+		user="$(echo "$get_user" | sed 's/+/%20/g' | sed 's % \\\\x g' | xargs printf | tr -d "\r\n" )";
+		echo "$(date +%s)\"$user\"$post_msg" >> "$datadir/$get_room.log"
 	fi
 	echo "HTTP/1.1 303 See Other\r"
 	echo "Location: $resource\r"
@@ -66,15 +69,19 @@ if [ "$method" = "POST" ]; then
 fi
 
 if [ -n "$get_last" ]; then
-	sed -n '$p' 'data/carrychat.log'
+	sed -n '$p' "$datadir/$get_room.log"
 	exit
 fi
 
-msgs="$(tac data/carrychat.log \
-| sed 's/::/:<br \/>/g;' \
-| sed -e "s|http[s]\?[:]//[^< ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | sed 's/^/<p>/g; s/$/<\/p>/g' | tac)"
+msgs=
+while IFS=\" read time user msg; do
+	msgs="$msgs
+<p>$user<br />
+	$msg
+</p>"
+done < "$datadir/$get_room.log"
 
 echo "$out$(eval "cat <<EOT
-$(cat chat.html)
+$(cat "$datadir/chat.html")
 EOT")"
 
