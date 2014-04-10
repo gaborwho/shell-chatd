@@ -47,6 +47,7 @@ $msgs
 <input type="submit" id="send" value="Send" />
 </form>
 <script>
+
 var msg = document.getElementById('msg');
 var form = document.getElementById('form');
 function scroll() {document.body.scrollTop = document.body.scrollHeight};
@@ -60,6 +61,7 @@ var focusMouse;
 document.body.onmousemove=function(){focusMouse = false};
 document.body.onmousedown=function(){focusMouse = true};
 document.body.onmouseup=function(){if (focusMouse) {document.getElementById('msg').focus();}};
+
 </script>
 </body>
 </html>

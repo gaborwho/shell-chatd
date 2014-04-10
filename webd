@@ -65,9 +65,14 @@ if [ "$method" = "POST" ]; then
 	exit
 fi
 
+if [ -n "$get_last" ]; then
+	sed -n '$p' 'data/carrychat.log'
+	exit
+fi
+
 msgs="$(tac data/carrychat.log \
 | sed 's/::/:<br \/>/g;' \
-| sed -e "s|http[s]\?[:]//[^ ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | sed 's/^/<p>/g; s/$/<\/p>/g' | tac)"
+| sed -e "s|http[s]\?[:]//[^< ]*|<a target=\"_blank\" href=\"\0\">\0</a>|g" | sed 's/^/<p>/g; s/$/<\/p>/g' | tac)"
 
 echo "$out$(eval "cat <<EOT
 $(cat chat.html)
