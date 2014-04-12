@@ -8,4 +8,3 @@ webd has to be added as an inetd daemon, with it's single argument being the wor
 Append to /etc/inetd.conf
 -----------
 www stream tcp nowait nobody /usr/sbin/tcpd /usr/local/bin/webd /var/www/chat
------------
